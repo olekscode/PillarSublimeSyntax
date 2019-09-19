@@ -1,0 +1,62 @@
+%YAML 1.2
+---
+name: Pillar
+file_extensions: [pillar]
+scope: text.html
+
+contexts:
+  main:
+    - match: \!+\b*.+
+      scope: entity.name.tag
+    - match: \@\@note.*
+      scope: entity.name
+    - match: \@\@todo.*
+      scope: invalid
+    - match: \@.+
+      scope: constant.numeric
+    - match: (?<!\\)\%.*
+      scope: comment
+    - match: \|.+
+      scope: constant.numeric
+    - match: \+.+\>.+\+
+      scope: entity.other.attribute-name
+    - match: \*.+\>.+\*
+      scope: entity.other.attribute-name
+
+    - match: \[\[\[
+      push: listing
+    - match: \*\@
+      push: reference 
+    - match: \"\"
+      push: bold
+    - match: \'\'
+      push: italic
+    - match: \=\=
+      push: monospaced
+    # - match: \-\-
+    #   push: strikethrough
+
+  listing:
+    - meta_scope: string
+    - match: \]\]\]
+      pop: true
+
+  reference:
+    - meta_scope: entity.other.attribute-name
+    - match: \*
+      pop: true
+
+  bold:
+    - meta_scope: markup.bold
+    - match: \"\"
+      pop: true
+
+  italic:
+    - meta_scope: markup.italic
+    - match: \'\'
+      pop: true
+
+  monospaced:
+    - meta_scope: string
+    - match: \=\=
+      pop: true
