@@ -6,57 +6,101 @@ scope: text.html
 
 contexts:
   main:
+    # Section
     - match: \!+\b*.+
       scope: entity.name.tag
+
+    # Note
     - match: \@\@note.*
       scope: entity.name
+
+    # Todo
     - match: \@\@todo.*
       scope: invalid
-    - match: \@.+
-      scope: constant.numeric
+
+    # Label
+    - match: ^\s*\@.+
+      scope: constant.numeric 
+
+    # Reference
+    - match: \*\@.*?\@\*
+      scope: variable.function
+
+    # Link
+    - match: \*.+\>.+\*
+      scope: variable.function
+
+    # Image
+    - match: \+.+\>.+\+
+      scope: variable.function
+
+    # Comment
     - match: (?<!\\)\%.*
       scope: comment
-    - match: \|.+
-      scope: constant.numeric
-    - match: \+.+\>.+\+
-      scope: entity.other.attribute-name
-    - match: \*.+\>.+\*
-      scope: entity.other.attribute-name
 
+    # Table
+    - match: ^\s*\|.+
+      scope: constant.numeric
+
+    # Monospaced
+    - match: \=\=.*?\=\=
+      scope: string
+
+    # Bold
+    - match: \"\".*?\"\"
+      scope: markup.bold
+
+    # Italic
+    - match: \'\'.*?\'\'
+      scope: markup.italic
+
+    # Ordered list
+    - match: ^\s*\#
+      scope: constant.numeric
+
+    # Unordered list
+    - match: ^\s*\-
+      scope: constant.numeric
+
+    # Definition list
+    - match: ^\s*[:;]
+      scope: constant.numeric
+
+    # Code listing
     - match: \[\[\[
       push: listing
-    - match: \*\@
-      push: reference 
-    - match: \"\"
-      push: bold
-    - match: \'\'
-      push: italic
-    - match: \=\=
-      push: monospaced
-    # - match: \-\-
-    #   push: strikethrough
+
+    # LaTeX inline
+    - match: \{\{\{
+      push: inline
+
+    # Annotation
+    - match: \$\{
+      push: annotation
 
   listing:
     - meta_scope: string
     - match: \]\]\]
       pop: true
 
-  reference:
+  inline:
     - meta_scope: entity.other.attribute-name
-    - match: \*
+    - match: \}\}\}
       pop: true
 
-  bold:
-    - meta_scope: markup.bold
-    - match: \"\"
+  annotation:
+    - meta_scope: entity.other.attribute-name
+    - match: \}\$
       pop: true
 
-  italic:
-    - meta_scope: markup.italic
-    - match: \'\'
-      pop: true
+    # Tag
+    - match: .+(?=\:)
+      scope: entity.other.attribute-name
 
-  monospaced:
-    - meta_scope: string
-    - match: \=\=
-      pop: true
+    # Parameter
+    - match: \w+(?=\=)
+      scope: variable.function
+
+    # Value
+    - match: (?<=\=)[^|}]+
+      scope: string
