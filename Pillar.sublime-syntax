@@ -110,7 +110,7 @@ contexts:
       pop: true
 
     # Tag
-    - match: .+(?=\:)
+    - match: \A.+(?=\:)
       scope: entity.other.attribute-name
 
     # Parameter
