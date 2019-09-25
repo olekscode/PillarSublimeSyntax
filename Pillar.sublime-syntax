@@ -7,12 +7,12 @@ scope: text.html
 contexts:
   main:
     # Section
-    - match: \!+\b*.+
+    - match: ^\s*\!+\b*.+
       scope: entity.name.tag
 
     # Note
     - match: \@\@note.*
-      scope: entity.name
+      scope: storage.type
 
     # Todo
     - match: \@\@todo.*
@@ -23,15 +23,7 @@ contexts:
       scope: constant.numeric 
 
     # Reference
-    - match: \*\@.*?\@\*
-      scope: variable.function
-
-    # Link
-    - match: \*.+\>.+\*
-      scope: variable.function
-
-    # Image
-    - match: \+.+\>.+\+
+    - match: \*\@.*?\*
       scope: variable.function
 
     # Comment
@@ -66,6 +58,14 @@ contexts:
     - match: ^\s*[:;]
       scope: constant.numeric
 
+    # Link
+    - match: \*(?=.+\*)
+      push: link
+
+    # Image
+    - match: \+(?=.+\>.+\+)
+      push: image
+
     # Code listing
     - match: \[\[\[
       push: listing
@@ -77,6 +77,22 @@ contexts:
     # Annotation
     - match: \$\{
       push: annotation
+
+  link:
+    - meta_scope: variable.function
+    - match: \*
+      pop: true
+
+    - match: \b[^\>\*]+(?=\>)
+      scope: entity.other.attribute-name
+
+  image:
+    - meta_scope: variable.function
+    - match: \+
+      pop: true
+
+    - match: \b[^\>\+]+(?=\>)
+      scope: entity.other.attribute-name
 
   listing:
     - meta_scope: string
